@@ -10,8 +10,6 @@ public class FlappyCheckers : MonoBehaviour
     public GameObject LightStops;
     private GameObject LightHolder;
 
-    public GameObject Barriers;
-
     // Background
     public Renderer Background;
     public Material normalGravity;
@@ -38,9 +36,13 @@ public class FlappyCheckers : MonoBehaviour
     }
     private GravityMode currentGravity;
 
-    // Score 
+    // Score
     public Text ScoreText;
     public int Score;
+
+    // Game Over UI
+    public GameObject GameOverPanel;
+    public Text FinalScoreText;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -56,9 +58,6 @@ public class FlappyCheckers : MonoBehaviour
 
         LightHolder = new GameObject("LightHolder");
         LightHolder.transform.parent = this.transform;
-
-        Barriers = new GameObject("Barrier");
-        Barriers.transform.parent = this.transform;
 
         SpeedVertically = 0f;
         LightStopSpawn = 0f;
@@ -180,9 +179,6 @@ public class FlappyCheckers : MonoBehaviour
         LightHolder = new GameObject("Holder");
         LightHolder.transform.parent = this.transform;
 
-        Barriers = new GameObject("Barrier");
-        Barriers.transform.parent = this.transform;
-
         SpeedVertically = 0f;
         Bike.transform.position = Vector3.up * 5;
 
@@ -198,9 +194,22 @@ public class FlappyCheckers : MonoBehaviour
 
     public void GameOver(int finalScore)
     {
-        string bubbleIOUrl = "https://gravity-checkers-prom.bubbleapps.io/version-test/index?score=" + finalScore;
-        Application.OpenURL(bubbleIOUrl);
+        Time.timeScale = 0f;
+        if (GameOverPanel != null) GameOverPanel.SetActive(true);
+        if (FinalScoreText != null) FinalScoreText.text = "Final Score: " + finalScore.ToString();
+    }
+
+    public void Restart()
+    {
+        Time.timeScale = 1f;
+        if (GameOverPanel != null) GameOverPanel.SetActive(false);
         RestGame();
+    }
+
+    public void SubmitScore()
+    {
+        string bubbleIOUrl = "https://gravity-checkers-prom.bubbleapps.io/version-test/index?score=" + Score;
+        Application.OpenURL(bubbleIOUrl);
     }
 
 }
