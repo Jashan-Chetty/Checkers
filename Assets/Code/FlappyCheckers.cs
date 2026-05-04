@@ -1,4 +1,4 @@
-using System.Threading;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +27,13 @@ public class FlappyCheckers : MonoBehaviour
     public int LightCount;
     public float Speed = 2f;
 
+    // Difficulty scaling
+    public float SpeedPerScore = 0.15f;
+    public float IntervalPerScore = 0.05f;
+    public float MinInterval = 0.8f;
+    private float baseSpeed;
+    private float baseInterval;
+
     // Gravity
     float gravityTimer;
     public float gravityInterval = 10f;
@@ -48,6 +55,9 @@ public class FlappyCheckers : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        baseSpeed = Speed;
+        baseInterval = LightIntervals;
+
         Score = 0;
         ScoreText.text = "SCORE: " + Score.ToString();
 
@@ -115,6 +125,8 @@ public class FlappyCheckers : MonoBehaviour
                 {
                     Score = pipeId;
                     ScoreText.text = "SCORE: " + Score.ToString();
+                    Speed = baseSpeed + Score * SpeedPerScore;
+                    LightIntervals = Mathf.Max(MinInterval, baseInterval - Score * IntervalPerScore);
                 }
             }
 
@@ -175,6 +187,9 @@ public class FlappyCheckers : MonoBehaviour
         ScoreText.text = "SCORE: " + Score.ToString();
         LightCount = 0;
 
+        Speed = baseSpeed;
+        LightIntervals = baseInterval;
+
         Destroy(LightHolder);
         LightHolder = new GameObject("Holder");
         LightHolder.transform.parent = this.transform;
@@ -195,14 +210,20 @@ public class FlappyCheckers : MonoBehaviour
     public void GameOver(int finalScore)
     {
         Time.timeScale = 0f;
-        if (GameOverPanel != null) GameOverPanel.SetActive(true);
-        if (FinalScoreText != null) FinalScoreText.text = "Final Score: " + finalScore.ToString();
+        if (GameOverPanel != null)
+            GameOverPanel.SetActive(true);
+
+        if (FinalScoreText != null)
+            FinalScoreText.text = "Final Score: " + finalScore.ToString();
     }
 
     public void Restart()
     {
         Time.timeScale = 1f;
-        if (GameOverPanel != null) GameOverPanel.SetActive(false);
+
+        if (GameOverPanel != null)
+            GameOverPanel.SetActive(false);
+
         RestGame();
     }
 
